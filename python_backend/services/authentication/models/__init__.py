@@ -3,8 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
 
-from authentcation.models.base import Base
-from authentcation.models.user import User
+from .base import Base
 
 load_dotenv(find_dotenv())
 

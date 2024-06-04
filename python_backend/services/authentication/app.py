@@ -1,22 +1,24 @@
-from concurrent import futures
-import grpc
-import logging
+import os
+from flask import Flask
+from flask_cors import CORS
+from flask_restx import Api
+from dotenv import load_dotenv
 
-from services.auth import routes, service_pb2_grpc
+from authentication.services.auth.routes import AuthServicesLoginAPI, AuthServicesSignupAPI
 
-
-def serve():
-	server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-
-	# This could be in another file  ¯\_(ツ)_/¯
-
-	service_pb2_grpc.add_AuthenticationServerServicer_to_server(routes.AuthServices(), server)
-
-	logging.info("Server stating in Port 50051...")
-	server.add_insecure_port('[::]:50051')
-	server.start()
-	server.wait_for_termination()
+load_dotenv()
 
 
-if __name__ == '__main__':
-	serve()
+def add_app_routes(app):
+	api = Api(app)
+
+	api.add_resource(AuthServicesLoginAPI, '/auth/login')
+	api.add_resource(AuthServicesSignupAPI, '/auth/signup')
+
+
+def create_app():
+	app = Flask(__name__)
+	CORS(app)
+	add_app_routes(app)
+
+	return app

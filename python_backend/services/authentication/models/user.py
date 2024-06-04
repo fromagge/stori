@@ -12,3 +12,11 @@ class User(Base):
 	password_hash = Column(String, nullable=False)
 	create_date = Column(DateTime, default=datetime.utcnow)
 	update_date = Column(DateTime, onupdate=datetime.utcnow)
+
+	def save(self, commit=False):
+		from models import session
+
+		session.add(self)
+		if commit:
+			session.commit()
+		return self
