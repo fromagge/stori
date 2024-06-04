@@ -39,6 +39,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://postgres:stori_db_password@postgres:5432"
       REDIS_HOST: "redis"
+      SECRET_KEY: "my_super_secret_key"
       REDIS_PORT: "6379"
       REDIS_DB: "0"
       PORT: 50051

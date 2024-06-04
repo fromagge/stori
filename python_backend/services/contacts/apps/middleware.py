@@ -17,7 +17,7 @@ class AuthMiddleware:
 		token = request.headers.get('Authorization')
 
 		if not token:
-			return JsonResponse({'error': "You are unathorized"}, status=403)
+			return JsonResponse({'error': "You are unathorized from the get got."}, status=403)
 
 		try:
 			response = self.grpc_client.verify_token(token)
@@ -25,7 +25,7 @@ class AuthMiddleware:
 				request.user_id = response['userId']
 				return self.get_response(request)
 			else:
-				return JsonResponse({'error': "You are unathorizesssd"}, status=403)
+				return JsonResponse({'error': "Authorization invalid"}, status=403)
 		except Exception as e:
 			logging.error(f'Error: {e}')
-			return JsonResponse({'error': "You are unathorizesssssdsdsd"}, status=403)
+			return JsonResponse({'error': "Something went wrong with you authorization"}, status=403)
