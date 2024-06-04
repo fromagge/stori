@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
 
 from .base import Base
+from .user import User
 
 load_dotenv(find_dotenv())
 

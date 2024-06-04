@@ -1,11 +1,15 @@
+import logging
+import os
 from django.http import JsonResponse
 
 from apps.grpc_client import GrpcClient
 
+
 class AuthMiddleware:
 	def __init__(self, get_response):
 		self.get_response = get_response
-		self.grpc_client = GrpcClient("your_server_address")
+		server_address = os.environ.get('AUTH_SERVER_ADDRESS')
+		self.grpc_client = GrpcClient(server_address)
 
 	def __call__(self, request):
 		from apps.auth_pb2 import VerifyRequest
@@ -16,14 +20,12 @@ class AuthMiddleware:
 			return JsonResponse({'error': "You are unathorized"}, status=403)
 
 		try:
-			request.user_id = 1
-			return self.get_response(request)
-			response = self.grpc_client.verify(verify_request)
-			print(response)
-			if response.valid:
-				request.user_id = response.user_id
+			response = self.grpc_client.verify_token(token)
+			if response['valid']:
+				request.user_id = response['userId']
 				return self.get_response(request)
 			else:
-				return JsonResponse({'error': "You are unathorized"}, status=403)
+				return JsonResponse({'error': "You are unathorizesssd"}, status=403)
 		except Exception as e:
-			return JsonResponse({'error': "You are unathorized"}, status=403)
+			logging.error(f'Error: {e}')
+			return JsonResponse({'error': "You are unathorizesssssdsdsd"}, status=403)

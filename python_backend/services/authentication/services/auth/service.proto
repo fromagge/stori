@@ -1,35 +1,10 @@
 syntax = "proto3";
 
 service AuthenticationServer {
-    rpc Signup (AuthRequest) returns (SignupResponse);
-    rpc Login (AuthRequest) returns (LoginResponse);
     rpc Verify (VerifyRequest) returns (VerifyResponse);
-    rpc Refresh (VerifyRequest) returns (RefreshToken);
     rpc Logout (LogoutRequest) returns (LogoutResponse);
 }
 
-
-message AuthRequest {
-    string username = 1;
-    string password = 2;
-}
-
-// Signup Request
-
-message SignupResponse {
-    string user_id = 1;
-}
-
-// Login Request
-
-
-message LoginResponse {
-    string user_id = 1;
-    string token = 2;
-    string refresh_token = 3;
-}
-
-// Verify JWT Token
 
 message VerifyRequest {
     string token = 1;
@@ -41,14 +16,6 @@ message VerifyResponse {
     string user_id = 3;
 }
 
-
-// Refresh JWT Token
-
-message RefreshToken {
-    string refresh_token = 1;
-}
-
-// Logout
 
 message LogoutRequest {
     string user_id = 1;

@@ -11,7 +11,7 @@ from grpc import StatusCode
 from google.protobuf.json_format import MessageToDict
 
 import marshmallow.exceptions
-import authentication.clients.cache as cache
+import clients.cache as cache
 
 
 def is_password_strong(password: str) -> bool:
@@ -21,18 +21,24 @@ def is_password_strong(password: str) -> bool:
 	return len(password) >= 8 and any(c.isupper() for c in password) and any(c.isdigit() for c in password)
 
 
-def validate_grpc(pydantic_model):
+def validate_grpc(validation_schema):
 	def decorator(func):
 		@wraps(func)
 		def wrapper(self, request, context):
+			_dict = MessageToDict(request)
+
+			if not _dict or _dict is None or _dict is {}:
+				context.set_code(StatusCode.INVALID_ARGUMENT)
+				context.set_details('Invalid request')
+				raise BadRequest(description='Invalid request')
+
 			try:
-				_dict = {}
-				validated_request = pydantic_model()
+				payload = validation_schema().load(_dict)
 			except Exception as e:
 				context.set_code(StatusCode.INVALID_ARGUMENT)
 				context.set_details(f'Invalid request: {str(e)}')
-				return
-			return func(self, validated_request, context)
+				raise BadRequest(description='Invalid request')
+			return func(self, payload, context)
 
 		return wrapper
 

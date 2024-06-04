@@ -1,6 +1,9 @@
+import os
 from concurrent import futures
 import grpc
 import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 from services.auth import routes, service_pb2_grpc
 
@@ -12,8 +15,11 @@ def serve():
 
 	service_pb2_grpc.add_AuthenticationServerServicer_to_server(routes.AuthServicesgRPC(), server)
 
-	logging.info("Server stating in Port 50051...")
-	server.add_insecure_port('[::]:50051')
+	if not (PORT := os.environ.get('PORT')):
+		PORT = 50051
+
+	logging.info(f"Server stating in Port {PORT}...")
+	server.add_insecure_port(f'[::]:{PORT}')
 	server.start()
 	server.wait_for_termination()
 

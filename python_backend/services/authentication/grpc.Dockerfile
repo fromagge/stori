@@ -1,4 +1,3 @@
-
 # Use an official Python runtime as a parent image
 FROM python:3.12-slim
 
@@ -11,17 +10,17 @@ RUN apt-get update \
 ENV PATH="/root/.local/bin:$PATH"
 
 # Set the working directory in the container
-WORKDIR /contacts
+WORKDIR /authentication
 
 # Copy pyproject.toml and poetry.lock to the working directory
-COPY pyproject.toml poetry.lock /contacts/
+COPY pyproject.toml poetry.lock /authentication/
 
 # Install dependencies
 RUN poetry install --no-root
 
 # Copy the rest of the application code to the working directory
-COPY . /contacts
+COPY . /authentication
 
-EXPOSE 8000
+EXPOSE 50051
 
-CMD ["sh", "-c", "poetry run python manage.py migrate && poetry run python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "poetry run python grpc_server.py"]

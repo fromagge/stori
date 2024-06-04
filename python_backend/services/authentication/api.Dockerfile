@@ -21,9 +21,9 @@ RUN poetry install --no-root
 # Copy the rest of the application code to the working directory
 COPY . /authentication
 
-EXPOSE 5001
+EXPOSE 5100
 
 # Define environment variable
 ENV FLASK_APP=run.py
 
-CMD ["sh", "-c", "poetry run alembic upgrade head && poetry run flask run --host=0.0.0.0"]
+CMD ["sh", "-c", "poetry run alembic upgrade head && poetry run python run.py"]

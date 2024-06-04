@@ -24,7 +24,7 @@ import sys
 
 sys.path = ['', '..'] + sys.path[1:]
 
-from authentication.models.user import User
+from models.user import User
 
 target_metadata = [User.metadata]
 

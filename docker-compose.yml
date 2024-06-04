@@ -15,7 +15,7 @@ services:
     ports:
       - "6379:6379"
 
-  flask_app:
+  authentication_flask_app:
     build:
       context: python_backend/services/authentication
       dockerfile: api.Dockerfile
@@ -25,12 +25,49 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       REDIS_DB: "0"
-      PORT: 5000
+      PORT: 5100
     ports:
-      - "5000:5000"
+      - "5100:5100"
     depends_on:
       - postgres
       - redis
+
+  validation_grpc_server:
+    build:
+      context: python_backend/services/authentication
+      dockerfile: grpc.Dockerfile
+    environment:
+      DATABASE_URL: "postgresql://postgres:stori_db_password@postgres:5432"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+      PORT: 50051
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres
+      - redis
+
+  contact_django_app:
+    build:
+      context: python_backend/services/contacts
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: "secret123"
+      DB_NAME: "postgres"
+      DB_PWD: "stori_db_password"
+      DB_USER: "postgres"
+      DB_HOST: "postgres"
+      AUTH_SERVER_ADDRESS: "validation_grpc_server:50051"
+      DB_PORT: "5432"
+    depends_on:
+      - postgres
+      - redis
+      - validation_grpc_server
+
+
 
 volumes:
   postgres-data:

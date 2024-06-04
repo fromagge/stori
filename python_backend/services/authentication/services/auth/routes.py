@@ -1,38 +1,26 @@
+import logging
 from flask_restx import Resource
 
-import authentication.services.auth.service_pb2 as service_pb2
-import authentication.services.auth.service_pb2_grpc as service_grpc
-from authentication.services.user.serializers import UserSerializer
-from authentication.services.user.services import UserService
-from authentication.utils import validate_api, loggrpc, validate_grpc
+import services.auth.service_pb2 as service_pb2
+import services.auth.service_pb2_grpc as service_grpc
+from services.auth.serializers import TokenSerializer
+from services.user.services import UserService
+from services.user.serializers import UserSerializer
+from clients.token import JwtClient
+from utils import validate_api, loggrpc, validate_grpc
+
+logger = logging.getLogger(__name__)
 
 
 class AuthServicesgRPC(service_grpc.AuthenticationServerServicer):
 
 	@loggrpc
-	@validate_grpc(UserSerializer)
-	def Signup(self, request, context):
-		username = request.username
-		password = request.password
-
-		new_user_id = UserService.create_user(username, password)
-
-		return service_pb2.SignupResponse(user_id=new_user_id)
-
-	def Login(self, request, context):
-		pass
-
+	@validate_grpc(TokenSerializer)
 	def Verify(self, request, context):
-		pass
-
-	def Refresh(self, request, context):
-		pass
-
-	def Logout(self, request, context):
-		pass
-
-	def __init__(self):
-		pass
+		logger.info(f'Verify request received')
+		claims = JwtClient.verify_token(request['token'])
+		logger.info(f'Verify request processed')
+		return service_pb2.VerifyResponse(message="Client is authenticated", valid=True, user_id=claims['user_id'])
 
 
 class AuthServicesLoginAPI(Resource):

@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_restx import Api
 from dotenv import load_dotenv
 
-from authentication.services.auth.routes import AuthServicesLoginAPI, AuthServicesSignupAPI
+from services.auth.routes import AuthServicesLoginAPI, AuthServicesSignupAPI
 
 load_dotenv()
 

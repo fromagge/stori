@@ -2,8 +2,8 @@ import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import Conflict
 
-from authentication.models import session
-from authentication.utils import is_password_strong, generate_tokens
+from models import session
+from utils import is_password_strong, generate_tokens
 
 
 class UserService:

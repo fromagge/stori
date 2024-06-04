@@ -27,6 +27,8 @@ def store_refresh_token(user_id, refresh_token):
 
 def get_token(user_id):
 	access_name = make_access_key(user_id)
+	if not redis_client.exists(access_name):
+		return None
 	return redis_client.get(access_name)
 
 
