@@ -1,40 +1,51 @@
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.common import validate
-from apps.contacts.serializers import ContactSerializer
+from apps.contacts.serializers import ContactSerializer, ContactUpdateSerializer
+
+from apps.contacts.services import ContactService
 
 
-class LoanCreateView(APIView):
+class ContactCreateView(APIView):
+
+	def get(self, request, *args, **kwargs):
+		user_id = request.user_id
+		contacts = ContactService.get_contacts(user_id)
+
+		serialized_data = ContactSerializer(contacts, many=True)
+		return Response(serialized_data.data, 200)
 
 	@validate(ContactSerializer)
 	def post(self, request, payload, *args, **kwargs):
-		user_id = payload.pop('customer')
-		loan_amount = payload.pop('amount')
+		user_id = request.user_id
+		contact = ContactService.create_contact(user_id, **payload)
 
-		loan = LoanService.create_loan(user_id, loan_amount, payload)
-
-		serialized_data = LoanDetailSerializer(loan)
+		serialized_data = ContactSerializer(contact)
 		return Response(serialized_data.data, 201)
 
 
-class LoanDetailView(APIView):
+class ContactDetailView(APIView):
 
-	@permission_classes([IsAdminUser, UserIsOwner])
-	def get(self, request, external_id, *args, **kwargs):
-		loan = LoanService.get_loan(external_id)
+	def get(self, request, contact_id, *args, **kwargs):
+		user_id = request.user_id
+		contact = ContactService.get_contacts(user_id, contact_id)
 
-		self.check_object_permissions(request, loan)
-
-		serialized_data = LoanDetailSerializer(loan)
+		serialized_data = ContactSerializer(contact.first())
 		return Response(serialized_data.data, 200)
 
-	@validate(LoanUpdateSerializer)
-	@permission_classes([IsAdminUser])
-	def update(self, request, external_id, *args, **kwargs):
-		loan = LoanService.change_load_status(external_id, request.data['status'])
+	@validate(ContactUpdateSerializer)
+	def put(self, request,payload, contact_id, *args, **kwargs):
+		user_id = request.user_id
+		contact = ContactService.update_contact(user_id, contact_id, **payload)
 
-		serialized_data = LoanDetailSerializer(loan)
+		serialized_data = ContactSerializer(contact)
 		return Response(serialized_data.data, 200)
+
+	def delete(self, request, contact_id, *args, **kwargs):
+		user_id = request.user_id
+		is_deleted = ContactService.delete_contact(user_id, contact_id)
+		if not is_deleted:
+			return Response({}, 404)
+
+		return Response({}, 204)

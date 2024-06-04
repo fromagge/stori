@@ -1,7 +1,7 @@
 import pytest
 from django.conf import settings
 from django.apps import apps
-from django.db import connection
+from django.db import connection, models
 
 @pytest.fixture(scope='session')
 def django_db_setup():
@@ -26,7 +26,7 @@ def django_db_setup():
 
 def load_test_models():
     # Define the models you want to load
-    models_to_load = ['app1.Model1', 'app2.Model2']
+    models_to_load = ['apps.contacts.models.Contact', 'apps.contacts.models.User']
 
     for model_name in models_to_load:
         try:
@@ -36,6 +36,7 @@ def load_test_models():
             # Ensure the model is synchronized with the database schema
             if not model_class._meta.db_table in connection.introspection.table_names():
                 with connection.schema_editor() as schema_editor:
+
                     schema_editor.create_model(model_class)
 
         except LookupError:

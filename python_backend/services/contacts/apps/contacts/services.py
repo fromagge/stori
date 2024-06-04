@@ -11,7 +11,10 @@ class ContactService:
 	@staticmethod
 	def get_contacts(user_id, contact_id=None):
 		if contact_id:
-			return Contact.objects.get(user_id=user_id, id=contact_id)
+			try:
+				Contact.objects.get(user_id=user_id, id=contact_id)
+			except Contact.DoesNotExist:
+				raise NotFound({'details': 'The contact does not exist'})
 
 		return Contact.objects.filter(user_id=user_id).all()
 
@@ -29,19 +32,18 @@ class ContactService:
 	@staticmethod
 	@transaction.atomic
 	def update_contact(user_id, contact_id, **new_details):
-		contact = Contact.objects.get(user_id=user_id, id=contact_id)
+		contact = ContactService.get_contacts(user_id=user_id, contact_id=contact_id)
 		if not contact:
 			raise NotFound({'details': 'The contact does not exist'})
 
-		saved_details = contact.update(**new_details)
+		Contact.objects.filter(user_id=user_id, id=contact_id).update(**new_details)
 
-		saved_details.save()
-		return saved_details
+		return Contact.objects.get(user_id=user_id, id=contact_id)
 
 	@staticmethod
 	@transaction.atomic
 	def delete_contact(user_id, contact_id):
-		contact = Contact.objects.get(user_id=user_id, id=contact_id)
+		contact = ContactService.get_contacts(user_id=user_id, contact_id=contact_id)
 		if not contact:
 			raise NotFound({'details': 'The contact does not exist'})
 

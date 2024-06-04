@@ -93,6 +93,7 @@ STATIC_ROOT = BASE_DIR / "theme/static"
 STATIC_URL = 'static/'
 
 MIDDLEWARE = [
+	'apps.middleware.AuthMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',

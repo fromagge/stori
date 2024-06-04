@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service AuthenticationServer {
+    rpc Verify (VerifyRequest) returns (VerifyResponse);
+}
+
+message VerifyRequest {
+    string token = 1;
+}
+
+message VerifyResponse {
+    string message = 1;
+    bool valid = 2;
+    string user_id = 3;
+}
+

@@ -2,15 +2,15 @@ from django.db import models
 
 
 class User(models.Model):
-	__tablename__ = 'users'
-
 	class Meta:
 		managed = False
+		db_table = 'users'
 
 
 class Contact(models.Model):
 	__tablename__ = 'contacts'
-	user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contacts')
+
+	user_id = models.IntegerField()
 	first_name = models.CharField(max_length=50)
 	last_name = models.CharField(max_length=50, blank=True, null=True)
 	email = models.EmailField(blank=True, null=True)
@@ -23,3 +23,8 @@ class Contact(models.Model):
 	zip = models.CharField(max_length=10, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		indexes = [
+			models.Index(fields=['user_id', 'id'])
+		]
