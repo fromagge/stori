@@ -1,13 +1,16 @@
 from os import getenv
-from os.path import dirname, basename, isfile, join
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-import glob
+from authentcation.models.base import Base
+from authentcation.models.user import User
+
+load_dotenv(find_dotenv())
+
+'''
 
 # This is a Python module that imports all the modules in the current directory and makes them available to be imported from the package.
-
 module_files = glob.glob(join(dirname(__file__), "*.py"))
 modules_inside_folder = []
 for file in module_files:
@@ -21,9 +24,11 @@ __all__ = modules_inside_folder
 # current directory. This list is used to define the __all__ variable in the __init__.py file. This variable is used to define the list of modules that are imported when the package is imported.
 # This is useful when you want to import all the modules in a package without having to import them one by one.
 
-# Now let's load the database
+'''
 
-from .base import Base
+
+
+# Now let's load the database
 
 DATABASE_URL = getenv('DATABASE_URL')
 
